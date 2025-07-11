@@ -7,8 +7,8 @@ function PostLogin() {
   const navigate = useNavigate();
   const { setIsAuthenticated, setUser } = useAuth();
 
-  // ✅ Use the correct env variable name
-  const baseURL = process.env.REACT_APP_API_URL || 'https://ecouter.onrender.com';
+  // ✅ Use Replit backend URL or fallback
+  const baseURL = process.env.REACT_APP_API_BASE_URL || 'https://5914e34b-5374-4c2b-ac7f-284078e07b90-00-25n0w53arrsx8.janeway.replit.dev';
 
   useEffect(() => {
     console.log("🔄 PostLogin mounted");
@@ -46,3 +46,4 @@ function PostLogin() {
 }
 
 export default PostLogin;
+
