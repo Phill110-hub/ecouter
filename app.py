@@ -4,7 +4,7 @@ from flask_cors import CORS
 from flask_login import LoginManager, login_required, current_user
 from flask_mail import Mail, Message
 from flask_migrate import Migrate
-from flask_session import Session  # ✅ ADDED
+from flask_session import Session
 from dotenv import load_dotenv
 import openai
 
@@ -20,12 +20,12 @@ app = Flask(__name__, instance_relative_config=True)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'devkey')
 
 # === Session & Cookies Configuration (Flask-Session) ===
-app.config['SESSION_TYPE'] = 'filesystem'  # ✅ Store session server-side
+app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_SECURE'] = os.getenv("FLASK_ENV") == "production"
-Session(app)  # ✅ Initialize server-side sessions
+Session(app)
 
 # === Database configuration ===
 db_path = os.path.join(app.instance_path, 'ecouter.db')
@@ -56,7 +56,8 @@ register_oauth_clients(app)
 migrate = Migrate(app, db)
 
 # === Enable CORS for frontend ===
-frontend_origin = os.getenv("FRONTEND_URL", "http://localhost:3000")
+frontend_origin = os.getenv("FRONTEND_URL", "https://ecouter.systems")
+app.config["FRONTEND_URL"] = frontend_origin
 CORS(app, origins=[frontend_origin], supports_credentials=True)
 
 # === Login manager user loader ===
