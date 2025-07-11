@@ -19,12 +19,14 @@ from models import User
 app = Flask(__name__, instance_relative_config=True)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'devkey')
 
-# === Session & Cookies Configuration (Flask-Session) ===
+# === Session & Cookies Configuration (Fixes Google OAuth CSRF error) ===
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-app.config['SESSION_COOKIE_SECURE'] = os.getenv("FLASK_ENV") == "production"
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # ✅ Required for Google OAuth
+app.config['SESSION_COOKIE_SECURE'] = True       # ✅ Required when SameSite=None
+app.config['SESSION_COOKIE_DOMAIN'] = ".ecouter.systems"  # ✅ Optional but helps with subdomains
+
 Session(app)
 
 # === Database configuration ===
@@ -201,3 +203,4 @@ def home():
 # === Run Dev Server ===
 if __name__ == '__main__':
     app.run(debug=True)
+
