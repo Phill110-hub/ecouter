@@ -1,3 +1,4 @@
+// src/pages/Signup.js
 import React, { useState, useEffect } from 'react';
 import './Signup.css';
 import { useNavigate, Link } from 'react-router-dom';
@@ -43,7 +44,9 @@ function Signup() {
   };
 
   const handleGoogleSignup = () => {
-    const baseURL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+    const baseURL =
+      process.env.REACT_APP_API_BASE_URL ||
+      'https://5914e34b-5374-4c2b-ac7f-284078e07b90-00-25n0w53arrsx8.janeway.replit.dev';
     window.location.href = `${baseURL}/login/google`;
   };
 
