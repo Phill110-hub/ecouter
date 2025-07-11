@@ -1,3 +1,4 @@
+
 import os
 from flask import Flask, jsonify, send_from_directory, current_app, request
 from flask_cors import CORS
@@ -52,8 +53,12 @@ oauth.init_app(app)
 register_oauth_clients(app)
 migrate = Migrate(app, db)
 
-# === Enable CORS ===
-CORS(app, origins=["http://localhost:3000"], supports_credentials=True)
+# === Enable CORS for frontend ===
+CORS(app, origins=[
+    "http://localhost:3000",
+    "https://ecouter.systems",
+    "https://www.ecouter.systems"
+], supports_credentials=True)
 
 # === Login Manager Loader ===
 @login_manager.user_loader
