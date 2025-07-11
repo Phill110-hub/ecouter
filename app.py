@@ -1,4 +1,3 @@
-
 import os
 from flask import Flask, jsonify, send_from_directory, current_app, request
 from flask_cors import CORS
@@ -8,10 +7,10 @@ from flask_migrate import Migrate
 from dotenv import load_dotenv
 import openai
 
-# Load environment variables
+# === Load environment variables ===
 load_dotenv()
 
-# === Import extensions ===
+# === Import extensions and models ===
 from extensions import db, login_manager, oauth, register_oauth_clients
 from models import User
 
@@ -35,16 +34,16 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv('FROM_EMAIL')
 # === Flask-Mail Init ===
 mail = Mail(app)
 
-# === Google OAuth ===
+# === Google OAuth Credentials ===
 app.config['GOOGLE_CLIENT_ID'] = os.getenv("GOOGLE_CLIENT_ID")
 app.config['GOOGLE_CLIENT_SECRET'] = os.getenv("GOOGLE_CLIENT_SECRET")
 
 # === OpenAI API ===
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# === Session & cookies ===
+# === Session & Cookies Configuration ===
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-app.config['SESSION_COOKIE_SECURE'] = False
+app.config['SESSION_COOKIE_SECURE'] = os.getenv("FLASK_ENV") == "production"
 
 # === Init extensions ===
 db.init_app(app)
@@ -54,19 +53,16 @@ register_oauth_clients(app)
 migrate = Migrate(app, db)
 
 # === Enable CORS for frontend ===
-CORS(app, origins=[
-    "http://localhost:3000",
-    "https://ecouter.systems",
-    "https://www.ecouter.systems"
-], supports_credentials=True)
+frontend_origin = os.getenv("FRONTEND_URL", "http://localhost:3000")
+CORS(app, origins=[frontend_origin], supports_credentials=True)
 
-# === Login Manager Loader ===
+# === Login manager user loader ===
 @login_manager.user_loader
 def load_user(user_id):
     with current_app.app_context():
         return db.session.get(User, int(user_id))
 
-# === Ensure folders & DB ===
+# === Create folders & DB if not present ===
 with app.app_context():
     os.makedirs(app.instance_path, exist_ok=True)
     os.makedirs("uploads", exist_ok=True)
@@ -83,7 +79,7 @@ with app.app_context():
         except Exception as e:
             print("❌ Failed to apply schema:", e)
 
-# === Send Email Function ===
+# === Utility: Send email ===
 def send_email(subject, recipient, body):
     try:
         msg = Message(subject=subject, recipients=[recipient], body=body)
@@ -112,17 +108,16 @@ app.register_blueprint(dashboard_bp)
 app.register_blueprint(projects_bp)
 app.register_blueprint(tags_bp)
 
-# === Serve avatar files ===
+# === Static File Routes ===
 @app.route('/avatars/<path:filename>')
 def serve_avatar(filename):
     return send_from_directory('avatars', filename)
 
-# === Serve uploaded audio ===
 @app.route('/uploads/<path:filename>')
 def serve_audio_file(filename):
     return send_from_directory('uploads', filename)
 
-# === Debug session ===
+# === Debug Session Info ===
 @app.route('/debug-session')
 def debug_session():
     return jsonify({
@@ -169,7 +164,7 @@ def test_email():
     )
     return jsonify({"message": "Test email sent!"})
 
-# === AI Support Assistant Endpoint ===
+# === AI Support Assistant ===
 @app.route('/api/support', methods=['POST'])
 def support_chat():
     data = request.json
@@ -195,11 +190,12 @@ def support_chat():
             "reply": "Assistant is currently unavailable. Please email support."
         }), 200
 
-# === Root route ===
+# === Root Route ===
 @app.route('/')
 def home():
     return jsonify({"message": "Écouter backend is running."})
 
-# --- Run ---
+# === Run Server (dev only) ===
 if __name__ == '__main__':
     app.run(debug=True)
+
