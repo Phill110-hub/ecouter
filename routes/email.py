@@ -34,15 +34,16 @@ def verify_email():
     if not user:
         return "User not found ❌", 404
 
-    if user.is_verified:
+    if user.verified:
         return "Account already verified ✅", 200
 
-    user.is_verified = True
+    user.verified = True
     db.session.commit()
     return "Email verified successfully! 🎉", 200
 
 def send_verification_email(email, token):
-    verify_url = f"http://localhost:5000/verify-email?token={token}"
+    backend_url = os.getenv("BACKEND_URL", "http://localhost:5000")
+    verify_url = f"{backend_url}/verify-email?token={token}"
     msg = Message("Verify Your Email", recipients=[email])
     msg.body = f"Click the link to verify your email: {verify_url}"
     mail.send(msg)
