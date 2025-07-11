@@ -6,8 +6,8 @@ function Login() {
   const navigate = useNavigate();
 
   const handleGoogleLogin = () => {
-    // Use environment variable instead of hardcoded localhost
-    const baseURL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+    // Replace with your actual Replit backend URL:
+    const baseURL = process.env.REACT_APP_API_BASE_URL || 'https://5914e34b-5374-4c2b-ac7f-284078e07b90-00-25n0w53arrsx8.janeway.replit.dev';
     window.location.href = `${baseURL}/login/google`;
   };
 
