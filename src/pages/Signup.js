@@ -42,6 +42,11 @@ function Signup() {
     toast.info('Email signup is disabled during development. Please use Google Sign-In instead.');
   };
 
+  const handleGoogleSignup = () => {
+    const baseURL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
+    window.location.href = `${baseURL}/login/google`;
+  };
+
   return (
     <div className="signup-container fade-in">
       <h2 className="signup-title">Join Écouter</h2>
@@ -107,12 +112,7 @@ function Signup() {
       </form>
 
       {/* Google Sign-In */}
-      <button
-        className="google-button shine-hover"
-        onClick={() =>
-          (window.location.href = 'http://localhost:5000/login/google')
-        }
-      >
+      <button className="google-button shine-hover" onClick={handleGoogleSignup}>
         <svg
           className="google-logo"
           xmlns="http://www.w3.org/2000/svg"
