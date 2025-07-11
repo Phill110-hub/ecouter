@@ -24,9 +24,11 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const API_BASE = 'https://ecouter.onrender.com'; // ✅ Use deployed backend
+
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:5000/logout', {
+      const response = await fetch(`${API_BASE}/logout`, {
         method: 'POST',
         credentials: 'include',
       });
@@ -46,7 +48,7 @@ function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/profile', {
+      const res = await fetch(`${API_BASE}/api/profile`, {
         method: 'GET',
         credentials: 'include',
       });
