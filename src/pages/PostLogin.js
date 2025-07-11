@@ -7,7 +7,8 @@ function PostLogin() {
   const navigate = useNavigate();
   const { setIsAuthenticated, setUser } = useAuth();
 
-  const baseURL = process.env.REACT_APP_API_BASE_URL || 'https://ecouter.onrender.com';
+  // ✅ Use the correct env variable name
+  const baseURL = process.env.REACT_APP_API_URL || 'https://ecouter.onrender.com';
 
   useEffect(() => {
     console.log("🔄 PostLogin mounted");
@@ -45,4 +46,3 @@ function PostLogin() {
 }
 
 export default PostLogin;
-
