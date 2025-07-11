@@ -1,3 +1,4 @@
+
 import os
 import uuid
 import secrets
@@ -60,6 +61,7 @@ def google_callback():
         token = oauth.google.authorize_access_token()
         resp = oauth.google.get('https://openidconnect.googleapis.com/v1/userinfo')
         user_info = resp.json()
+        print("🔍 Google user info:", user_info)
     except Exception as e:
         return jsonify({'error': f'Google login failed: {str(e)}'}), 400
 
@@ -94,8 +96,9 @@ def google_callback():
 
     login_user(user)
 
-    # ✅ Use production-safe redirect from app config
-    frontend_url = current_app.config.get('FRONTEND_URL', 'http://localhost:3000')
+    # ✅ Use production-safe redirect from environment
+    frontend_url = os.getenv('FRONTEND_URL', 'https://ecouter.systems')
+    print("🌐 Redirecting to:", f'{frontend_url}/post-login')
     return redirect(f'{frontend_url}/post-login')
 
 
@@ -121,4 +124,3 @@ def logout():
     logout_user()
     session.clear()
     return jsonify({'message': 'Logged out successfully'}), 200
-
