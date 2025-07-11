@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask_login import LoginManager, login_required, current_user
 from flask_mail import Mail, Message
 from flask_migrate import Migrate
+from flask_session import Session  # ✅ ADDED
 from dotenv import load_dotenv
 import openai
 
@@ -18,6 +19,14 @@ from models import User
 app = Flask(__name__, instance_relative_config=True)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'devkey')
 
+# === Session & Cookies Configuration (Flask-Session) ===
+app.config['SESSION_TYPE'] = 'filesystem'  # ✅ Store session server-side
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = os.getenv("FLASK_ENV") == "production"
+Session(app)  # ✅ Initialize server-side sessions
+
 # === Database configuration ===
 db_path = os.path.join(app.instance_path, 'ecouter.db')
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
@@ -30,20 +39,14 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = os.getenv('SMTP_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('SMTP_PASSWORD')
 app.config['MAIL_DEFAULT_SENDER'] = os.getenv('FROM_EMAIL')
-
-# === Flask-Mail Init ===
 mail = Mail(app)
 
-# === Google OAuth Credentials ===
+# === Google OAuth ===
 app.config['GOOGLE_CLIENT_ID'] = os.getenv("GOOGLE_CLIENT_ID")
 app.config['GOOGLE_CLIENT_SECRET'] = os.getenv("GOOGLE_CLIENT_SECRET")
 
 # === OpenAI API ===
 openai.api_key = os.getenv("OPENAI_API_KEY")
-
-# === Session & Cookies Configuration ===
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-app.config['SESSION_COOKIE_SECURE'] = os.getenv("FLASK_ENV") == "production"
 
 # === Init extensions ===
 db.init_app(app)
@@ -98,7 +101,6 @@ from routes.dashboard import dashboard_bp
 from routes.projects import projects_bp
 from routes.tags import tags_bp
 
-# === Register Blueprints ===
 app.register_blueprint(auth_bp)
 app.register_blueprint(profile_bp)
 app.register_blueprint(transcription_bp)
@@ -108,7 +110,7 @@ app.register_blueprint(dashboard_bp)
 app.register_blueprint(projects_bp)
 app.register_blueprint(tags_bp)
 
-# === Static File Routes ===
+# === Serve static assets ===
 @app.route('/avatars/<path:filename>')
 def serve_avatar(filename):
     return send_from_directory('avatars', filename)
@@ -117,7 +119,7 @@ def serve_avatar(filename):
 def serve_audio_file(filename):
     return send_from_directory('uploads', filename)
 
-# === Debug Session Info ===
+# === Debug session ===
 @app.route('/debug-session')
 def debug_session():
     return jsonify({
@@ -190,12 +192,11 @@ def support_chat():
             "reply": "Assistant is currently unavailable. Please email support."
         }), 200
 
-# === Root Route ===
+# === Root ===
 @app.route('/')
 def home():
     return jsonify({"message": "Écouter backend is running."})
 
-# === Run Server (dev only) ===
+# === Run Dev Server ===
 if __name__ == '__main__':
     app.run(debug=True)
-
