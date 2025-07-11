@@ -1,3 +1,4 @@
+// src/pages/PostLogin.js
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
@@ -6,10 +7,12 @@ function PostLogin() {
   const navigate = useNavigate();
   const { setIsAuthenticated, setUser } = useAuth();
 
+  const baseURL = process.env.REACT_APP_API_BASE_URL || 'https://ecouter.onrender.com';
+
   useEffect(() => {
     console.log("🔄 PostLogin mounted");
 
-    fetch('http://localhost:5000/api/session', { credentials: 'include' })
+    fetch(`${baseURL}/api/session`, { credentials: 'include' })
       .then(res => {
         console.log("🛰️ /api/session response status:", res.status);
         return res.json();
@@ -36,9 +39,10 @@ function PostLogin() {
         console.error("🚫 Fetch error:", err);
         navigate('/login');
       });
-  }, [navigate, setIsAuthenticated, setUser]);
+  }, [navigate, setIsAuthenticated, setUser, baseURL]);
 
   return <div>Redirecting...</div>;
 }
 
 export default PostLogin;
+
