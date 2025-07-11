@@ -1,4 +1,3 @@
-
 import os
 import uuid
 import secrets
@@ -98,7 +97,11 @@ def google_callback():
 
     # ✅ Use production-safe redirect from environment
     frontend_url = os.getenv('FRONTEND_URL', 'https://ecouter.systems')
-    print("🌐 Redirecting to:", f'{frontend_url}/post-login')
+    
+    # 🔍 Debug print to Render logs
+    print("🔁 FRONTEND_URL in callback:", frontend_url)
+    print("🧪 All ENV Vars:", dict(os.environ))  # optional full env dump
+
     return redirect(f'{frontend_url}/post-login')
 
 
