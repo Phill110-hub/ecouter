@@ -94,12 +94,12 @@ def google_callback():
 
     login_user(user)
 
-    # 🔁 Use environment variable for redirect
+    # ✅ Use production-safe redirect (via env)
     frontend_url = os.getenv('FRONTEND_URL', 'http://localhost:3000')
     return redirect(f'{frontend_url}/post-login')
 
 
-# === Session Info (used by frontend PostLogin.js) ===
+# === Session Info (used by PostLogin.js) ===
 @auth_bp.route('/api/session')
 def session_info():
     if current_user.is_authenticated:
@@ -121,4 +121,3 @@ def logout():
     logout_user()
     session.clear()
     return jsonify({'message': 'Logged out successfully'}), 200
-
