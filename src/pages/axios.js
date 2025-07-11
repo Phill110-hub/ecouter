@@ -2,7 +2,8 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-const baseURL = process.env.REACT_APP_API_URL || 'https://ecouter.onrender.com';
+// Replace this with your actual Replit backend URL:
+const baseURL = 'https://5914e34b-5374-4c2b-ac7f-284078e07b90-00-25n0w53arrsx8.janeway.replit.dev';
 
 const api = axios.create({
   baseURL,
