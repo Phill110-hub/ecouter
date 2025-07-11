@@ -1,7 +1,7 @@
 import os
 import uuid
 import secrets
-from flask import Blueprint, request, jsonify, redirect, url_for, session
+from flask import Blueprint, request, jsonify, redirect, url_for, session, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash
 from extensions import oauth, db
@@ -94,8 +94,8 @@ def google_callback():
 
     login_user(user)
 
-    # ✅ Use production-safe redirect (via env)
-    frontend_url = os.getenv('FRONTEND_URL', 'http://localhost:3000')
+    # ✅ Use production-safe redirect from app config
+    frontend_url = current_app.config.get('FRONTEND_URL', 'http://localhost:3000')
     return redirect(f'{frontend_url}/post-login')
 
 
@@ -121,3 +121,4 @@ def logout():
     logout_user()
     session.clear()
     return jsonify({'message': 'Logged out successfully'}), 200
+
