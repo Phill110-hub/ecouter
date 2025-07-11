@@ -1,10 +1,11 @@
+import os
+import uuid
+import secrets
 from flask import Blueprint, request, jsonify, redirect, url_for, session
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash
 from extensions import oauth, db
 from models import User
-import uuid
-import secrets
 
 # Email verification utilities
 from routes.email import generate_confirmation_token, send_verification_email
@@ -92,7 +93,10 @@ def google_callback():
         session['first_login'] = False
 
     login_user(user)
-    return redirect('http://localhost:3000/post-login')
+
+    # 🔁 Use environment variable for redirect
+    frontend_url = os.getenv('FRONTEND_URL', 'http://localhost:3000')
+    return redirect(f'{frontend_url}/post-login')
 
 
 # === Session Info (used by frontend PostLogin.js) ===
@@ -117,3 +121,4 @@ def logout():
     logout_user()
     session.clear()
     return jsonify({'message': 'Logged out successfully'}), 200
+
